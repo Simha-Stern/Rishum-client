@@ -1,0 +1,18 @@
+<article class="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+  <div class="flex h-40 items-center justify-center bg-slate-50 p-6">
+    <img
+      [ngSrc]="institution().logoUrl"
+      [alt]="'הלוגו של ' + institution().name"
+      width="160"
+      height="96"
+      class="max-h-24 w-auto object-contain"
+    />
+  </div>
+
+  <div class="flex flex-1 flex-col gap-2 p-5">
+    <h2 class="text-xl font-bold text-slate-900">{{ institution().name }}</h2>
+    <address class="mt-auto not-italic text-slate-600">
+      {{ institution().address }}, {{ institution().city }}
+    </address>
+  </div>
+</article>
