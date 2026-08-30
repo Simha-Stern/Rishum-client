@@ -22,6 +22,13 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - It MUST pass all AXE checks.
 - It MUST follow all WCAG AA minimums, including focus management, color contrast, and ARIA attributes.
 
+## Color Tokens
+
+- Use only color tokens defined in `src/styles.css` under `@theme`.
+- Do not use Tailwind default color classes, arbitrary color values, inline color styles, or raw CSS color values outside those theme definitions.
+- Prefer semantic tokens such as `bg-primary`, `text-text-muted`, `border-border`, and `text-danger`.
+- Use dedicated theme tokens for hover and disabled states; do not rely only on opacity for disabled controls.
+
 ### Components
 
 - Keep components small and focused on a single responsibility

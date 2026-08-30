@@ -1,0 +1,20 @@
+<main id="main-content" class="mx-auto max-w-4xl px-4 py-10" dir="rtl">
+  <p class="text-sm font-semibold text-primary-foreground">ניהול מוסד</p>
+  <h1 class="mt-1 text-3xl font-bold text-text">עורך תהליך ההרשמה</h1>
+  <section class="mt-6 rounded-2xl border border-border bg-surface p-6">
+    <label class="block text-sm font-medium">שם הטופס<input class="mt-1 w-full rounded-lg border border-border px-3 py-2" [ngModel]="name()" (ngModelChange)="name.set($event)" /></label>
+    <div class="mt-6 grid gap-3 rounded-xl bg-surface-muted p-4 sm:grid-cols-2">
+      <label class="text-sm font-medium">מזהה שדה<input class="mt-1 w-full rounded-lg border border-border px-3 py-2" [ngModel]="newField().key" (ngModelChange)="newField.set({ ...newField(), key: $event })" placeholder="schoolYear" /></label>
+      <label class="text-sm font-medium">שם שדה<input class="mt-1 w-full rounded-lg border border-border px-3 py-2" [ngModel]="newField().label" (ngModelChange)="newField.set({ ...newField(), label: $event })" /></label>
+      <label class="text-sm font-medium">סוג<input class="mt-1 w-full rounded-lg border border-border px-3 py-2" [ngModel]="newField().type" (ngModelChange)="newField.set({ ...newField(), type: $event })" /></label>
+      <label class="flex items-center gap-2 pt-6 text-sm font-medium"><input type="checkbox" [ngModel]="newField().required" (ngModelChange)="newField.set({ ...newField(), required: $event })" /> שדה חובה</label>
+      <button class="justify-self-start rounded-lg border border-primary-foreground px-4 py-2 font-medium text-primary-foreground hover:bg-surface-hover" type="button" (click)="addField()">הוספת שדה</button>
+    </div>
+    <ul class="mt-5 divide-y divide-border">
+      @for (field of fields(); track field.key) { <li class="flex items-center justify-between gap-4 py-3"><span><strong>{{ field.label }}</strong><span class="mr-2 text-sm text-text-muted">{{ field.key }} · {{ field.type }}</span></span><button class="text-sm font-semibold text-danger underline hover:text-danger-hover" type="button" (click)="removeField(field.key)">הסרה</button></li> }
+      @empty { <li class="py-3 text-text-muted">עדיין לא נוספו שדות.</li> }
+    </ul>
+    <div class="mt-6 flex flex-wrap gap-3"><button class="rounded-lg bg-secondary px-4 py-2 font-medium text-secondary-foreground hover:bg-secondary-hover" type="button" (click)="saveDraft()">שמירת טיוטה</button><button class="rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground hover:bg-primary-hover" type="button" (click)="publish()">פרסום</button></div>
+    @if (message(); as message) { <p class="mt-4 text-sm text-text" role="status">{{ message }}</p> }
+  </section>
+</main>

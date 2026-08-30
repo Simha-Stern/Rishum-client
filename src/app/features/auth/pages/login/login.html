@@ -1,0 +1,27 @@
+<main id="main-content" class="mx-auto flex min-h-screen max-w-md items-center px-4 py-10" dir="rtl">
+  <section class="w-full rounded-2xl border border-border bg-surface p-6 shadow-sm">
+    <h1 class="text-2xl font-bold text-text">כניסה לחשבון</h1>
+    <p class="mt-2 text-text-muted">היכנסו כדי לנהל את הפרופיל וההרשמות שלכם.</p>
+
+    <form class="mt-6 space-y-4" [formGroup]="form" (ngSubmit)="submit()">
+      <label class="block text-sm font-medium text-text">
+        אימייל
+        <input class="mt-1 w-full rounded-lg border border-border px-3 py-2" formControlName="email" type="email" autocomplete="email" [attr.aria-invalid]="form.controls.email.invalid && form.controls.email.touched" />
+      </label>
+      <label class="block text-sm font-medium text-text">
+        סיסמה
+        <input class="mt-1 w-full rounded-lg border border-border px-3 py-2" formControlName="password" type="password" autocomplete="current-password" [attr.aria-invalid]="form.controls.password.invalid && form.controls.password.touched" />
+      </label>
+      @if (form.invalid && (form.controls.email.touched || form.controls.password.touched)) {
+        <p class="rounded-lg border border-danger bg-accent p-3 text-sm text-accent-foreground" role="alert">יש להזין כתובת אימייל וסיסמה תקינים.</p>
+      }
+      @if (errorMessage(); as error) {
+        <p class="rounded-lg border border-danger bg-accent p-3 text-sm text-accent-foreground" role="alert">{{ error }}</p>
+      }
+      <button class="w-full rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground hover:bg-primary-hover disabled:cursor-not-allowed disabled:bg-disabled disabled:text-disabled-foreground disabled:opacity-100" type="submit" [disabled]="isSubmitting()" [attr.aria-busy]="isSubmitting()">
+        {{ isSubmitting() ? 'מתחבר…' : 'כניסה' }}
+      </button>
+    </form>
+    <p class="mt-5 text-sm text-text-muted">עדיין אין חשבון? <a class="font-semibold text-primary-foreground underline" routerLink="/register">יצירת חשבון</a></p>
+  </section>
+</main>

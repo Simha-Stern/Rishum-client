@@ -1,10 +1,100 @@
 @import 'tailwindcss';
 
-body {
-  margin: 0;
-  min-width: 20rem;
-  min-height: 100vh;
-  background: #f8fafc;
-  color: #0f172a;
-  font-family: Arial, Helvetica, sans-serif;
+@theme {
+  /* Brand palette */
+  --color-sage: #b7c8b6;
+  --color-cream: #f4ede5;
+  --color-blush: #e7b7ad;
+  --color-sand: #e7d5bd;
+  --color-mauve: #c6a5c2;
+  --color-white: #ffffff;
+
+  /* Semantic colors */
+  --color-primary: #b7c8b6;
+  --color-primary-hover: #9eb49d;
+  --color-primary-foreground: #263526;
+
+  --color-secondary: #c6a5c2;
+  --color-secondary-hover: #b38bad;
+  --color-secondary-foreground: #342431;
+
+  --color-background: #faf8f5;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f4ede5;
+  --color-surface-hover: #e7d5bd;
+
+  --color-text: #292524;
+  --color-text-dark: #292524;
+  --color-text-muted: #6b625e;
+  --color-muted: #f4ede5;
+  --color-muted-foreground: #6b625e;
+
+  --color-border: #7c7168;
+
+  --color-accent: #e7b7ad;
+  --color-accent-hover: #d89d91;
+  --color-accent-foreground: #4c2923;
+
+  /* Status */
+  --color-success: #4f754e;
+  --color-success-hover: #3e5e3d;
+  --color-success-foreground: #ffffff;
+  --color-warning: #986014;
+  --color-warning-hover: #7c4d10;
+  --color-warning-foreground: #ffffff;
+  --color-error: #b94a48;
+  --color-error-hover: #963b39;
+  --color-error-foreground: #ffffff;
+  --color-danger: #b94a48;
+  --color-danger-hover: #963b39;
+  --color-danger-foreground: #ffffff;
+
+  /* Inactive controls */
+  --color-disabled: #d8cec4;
+  --color-disabled-foreground: #6b625e;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-background);
+    color: var(--color-text);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+  }
+
+  :where(a, button, input, select, textarea):focus-visible {
+    outline: 0.1875rem solid var(--color-primary-foreground);
+    outline-offset: 0.1875rem;
+  }
+
+  .skip-link {
+    position: fixed;
+    z-index: 50;
+    top: 1rem;
+    inset-inline-start: 1rem;
+    transform: translateY(-200%);
+    border-radius: 0.5rem;
+    background-color: var(--color-primary);
+    padding: 0.75rem 1rem;
+    color: var(--color-primary-foreground);
+    font-weight: 700;
+  }
+
+  .skip-link:focus-visible {
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
 }

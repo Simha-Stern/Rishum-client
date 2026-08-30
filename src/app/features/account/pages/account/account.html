@@ -1,0 +1,42 @@
+<main id="main-content" class="mx-auto max-w-4xl px-4 py-10" dir="rtl">
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <p class="text-sm font-semibold text-primary-foreground">אזור אישי</p>
+      <h1 class="mt-1 text-3xl font-bold text-text">שלום, {{ auth.user()?.firstName }}</h1>
+      <p class="mt-2 text-text-muted">פרטים אלו ישמשו למילוי אוטומטי בהרשמות עתידיות.</p>
+    </div>
+    <button class="rounded-lg border border-border px-4 py-2 text-sm font-medium text-text hover:bg-surface-hover" type="button" (click)="logout()">התנתקות</button>
+  </div>
+
+  <section class="mt-8 rounded-2xl border border-border bg-surface p-6">
+    <h2 class="text-xl font-bold">הפרופיל שלי</h2>
+    <form class="mt-5 grid gap-4 sm:grid-cols-2" [formGroup]="form" (ngSubmit)="save()">
+      <label class="text-sm font-medium">שם פרטי<input class="mt-1 w-full rounded-lg border border-border px-3 py-2" formControlName="firstName" autocomplete="given-name" [attr.aria-invalid]="form.controls.firstName.invalid && form.controls.firstName.touched" /></label>
+      <label class="text-sm font-medium">שם משפחה<input class="mt-1 w-full rounded-lg border border-border px-3 py-2" formControlName="lastName" autocomplete="family-name" [attr.aria-invalid]="form.controls.lastName.invalid && form.controls.lastName.touched" /></label>
+      <label class="text-sm font-medium">טלפון<input class="mt-1 w-full rounded-lg border border-border px-3 py-2" formControlName="phone" type="tel" autocomplete="tel" /></label>
+      <label class="text-sm font-medium">תעודת זהות<input class="mt-1 w-full rounded-lg border border-border px-3 py-2" formControlName="idNumber" autocomplete="off" /></label>
+      @if (form.invalid && (form.controls.firstName.touched || form.controls.lastName.touched)) {
+        <p class="sm:col-span-2 rounded-lg border border-danger bg-accent p-3 text-sm text-accent-foreground" role="alert">יש למלא שם פרטי ושם משפחה.</p>
+      }
+      <div class="sm:col-span-2 flex items-center gap-4">
+        <button class="rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground hover:bg-primary-hover disabled:cursor-not-allowed disabled:bg-disabled disabled:text-disabled-foreground disabled:opacity-100" [disabled]="isSaving()" type="submit" [attr.aria-busy]="isSaving()">שמירת פרטים</button>
+        @if (saved()) { <p class="text-sm text-primary-foreground" role="status">הפרטים נשמרו.</p> }
+      </div>
+    </form>
+  </section>
+
+  <section class="mt-6 rounded-2xl border border-border bg-surface p-6">
+    <h2 class="text-xl font-bold">ניהול מוסדות</h2>
+    @if (auth.user()?.isSystemAdmin) {
+      <a class="mt-4 inline-block font-semibold text-primary-foreground underline" routerLink="/admin/institutions">ניהול כל המוסדות</a>
+    }
+    @for (membership of memberships(); track membership.institutionId) {
+      <div class="mt-4 flex flex-wrap gap-3 rounded-lg bg-surface-muted p-4 text-sm">
+        @if (membership.role === 'manager') { <a class="font-semibold text-primary-foreground underline" [routerLink]="['/institutions', membership.institutionId, 'analytics']">אנליטיקות המוסד</a> }
+        @if (membership.role === 'secretary') { <a class="font-semibold text-primary-foreground underline" [routerLink]="['/institutions', membership.institutionId, 'registration-editor']">עריכת תהליך ההרשמה</a> }
+      </div>
+    } @empty {
+      @if (!auth.user()?.isSystemAdmin) { <p class="mt-3 text-text-muted">אין לך כרגע תפקיד ניהולי במוסד.</p> }
+    }
+  </section>
+</main>

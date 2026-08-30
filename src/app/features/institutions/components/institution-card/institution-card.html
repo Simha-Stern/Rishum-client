@@ -1,5 +1,5 @@
-<article class="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-  <div class="flex h-40 items-center justify-center bg-slate-50 p-6">
+<a class="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-sm transition hover:-translate-y-0.5 hover:shadow-md" [routerLink]="['/institutions', institution().id, 'register']">
+  <div class="flex h-40 items-center justify-center bg-surface-muted p-6">
     <img
       [ngSrc]="institution().logoUrl"
       [alt]="'הלוגו של ' + institution().name"
@@ -10,9 +10,9 @@
   </div>
 
   <div class="flex flex-1 flex-col gap-2 p-5">
-    <h2 class="text-xl font-bold text-slate-900">{{ institution().name }}</h2>
-    <address class="mt-auto not-italic text-slate-600">
+    <h2 class="text-xl font-bold text-text">{{ institution().name }}</h2>
+    <address class="mt-auto not-italic text-text-muted">
       {{ institution().address }}, {{ institution().city }}
     </address>
   </div>
-</article>
+</a>

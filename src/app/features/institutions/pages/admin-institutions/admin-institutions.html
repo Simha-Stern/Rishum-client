@@ -1,0 +1,26 @@
+<main id="main-content" class="mx-auto max-w-5xl px-4 py-10" dir="rtl">
+  <p class="text-sm font-semibold text-primary-foreground">ניהול מערכת</p>
+  <h1 class="mt-1 text-3xl font-bold text-text">מוסדות</h1>
+  <section class="mt-6 rounded-2xl border border-border bg-surface p-6">
+    <h2 class="text-xl font-bold">יצירת מוסד</h2>
+    <form class="mt-4 grid gap-4 sm:grid-cols-2" [formGroup]="form" (ngSubmit)="create()">
+      <label class="text-sm font-medium">שם המוסד<input class="mt-1 w-full rounded-lg border border-border px-3 py-2" formControlName="name" autocomplete="organization" [attr.aria-invalid]="form.controls.name.invalid && form.controls.name.touched" /></label>
+      <label class="text-sm font-medium">קישור ללוגו<input class="mt-1 w-full rounded-lg border border-border px-3 py-2" formControlName="logoUrl" type="url" [attr.aria-invalid]="form.controls.logoUrl.invalid && form.controls.logoUrl.touched" /></label>
+      <label class="text-sm font-medium">כתובת<input class="mt-1 w-full rounded-lg border border-border px-3 py-2" formControlName="address" autocomplete="street-address" [attr.aria-invalid]="form.controls.address.invalid && form.controls.address.touched" /></label>
+      <label class="text-sm font-medium">עיר<input class="mt-1 w-full rounded-lg border border-border px-3 py-2" formControlName="city" autocomplete="address-level2" [attr.aria-invalid]="form.controls.city.invalid && form.controls.city.touched" /></label>
+      @if (form.invalid && (form.controls.name.touched || form.controls.logoUrl.touched || form.controls.address.touched || form.controls.city.touched)) {
+        <p class="sm:col-span-2 rounded-lg border border-danger bg-accent p-3 text-sm text-accent-foreground" role="alert">יש למלא את כל שדות החובה.</p>
+      }
+      <button class="sm:col-span-2 justify-self-start rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground hover:bg-primary-hover" type="submit">יצירת מוסד</button>
+    </form>
+    @if (message(); as message) { <p class="mt-4 text-sm text-text" role="status">{{ message }}</p> }
+  </section>
+  <section class="mt-6 rounded-2xl border border-border bg-surface p-6">
+    <h2 class="text-xl font-bold">מוסדות קיימים</h2>
+    <ul class="mt-4 divide-y divide-border">
+      @for (institution of institutions(); track institution.id) {
+        <li class="py-3"><p class="font-semibold">{{ institution.name }}</p><p class="text-sm text-text-muted">{{ institution.address }}, {{ institution.city }}</p></li>
+      } @empty { <li class="py-3 text-text-muted">אין עדיין מוסדות.</li> }
+    </ul>
+  </section>
+</main>
