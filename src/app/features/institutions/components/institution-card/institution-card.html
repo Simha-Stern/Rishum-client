@@ -10,7 +10,7 @@
   </div>
 
   <div class="flex flex-1 flex-col gap-2 p-5">
-    <h2 class="text-xl font-bold text-text">{{ institution().name }}</h2>
+    <app-heading [text]="institution().name" level="2" size="card" />
     <address class="mt-auto not-italic text-text-muted">
       {{ institution().address }}, {{ institution().city }}
     </address>

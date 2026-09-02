@@ -32,6 +32,8 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 ## Components
 
 - Keep components small and focused on a single responsibility.
+- Every distinct page section and UI element (for example, headers, footers, navigation, forms, cards, tables, and dialogs) must be implemented as a separate component. Do not leave such markup embedded in page or root templates.
+- A component may compose smaller components, but it must not accumulate unrelated page sections or reusable UI elements.
 - Use `input()` and `output()` functions instead of `@Input()` and `@Output()` decorators.
 - Use `model()` for two-way bound properties with `[(prop)]` syntax instead of manually pairing `input()` with `output()`.
 - Prefer inline templates for small components.

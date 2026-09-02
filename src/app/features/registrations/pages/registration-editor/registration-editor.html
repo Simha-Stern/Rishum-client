@@ -1,20 +1,24 @@
 <main id="main-content" class="mx-auto max-w-4xl px-4 py-10" dir="rtl">
   <p class="text-sm font-semibold text-primary-foreground">ניהול מוסד</p>
-  <h1 class="mt-1 text-3xl font-bold text-text">עורך תהליך ההרשמה</h1>
+  <app-heading class="mt-1 block" text="עורך תהליך ההרשמה" level="1" size="page" />
   <section class="mt-6 rounded-2xl border border-border bg-surface p-6">
-    <label class="block text-sm font-medium">שם הטופס<input class="mt-1 w-full rounded-lg border border-border px-3 py-2" [ngModel]="name()" (ngModelChange)="name.set($event)" /></label>
+    <app-form-field label="שם הטופס"><input appFormControl [ngModel]="name()" (ngModelChange)="name.set($event)" /></app-form-field>
+    <app-form-field class="mt-4 block" label="תאריך ושעת סגירת ההרשמה"><input appFormControl type="datetime-local" [ngModel]="closesAt()" (ngModelChange)="closesAt.set($event)" /></app-form-field>
+    <p class="mt-2 text-sm text-text-muted">ההרשמה תיסגר אוטומטית במועד שנקבע. אפשר לסגור אותה מידית אחרי הפרסום.</p>
     <div class="mt-6 grid gap-3 rounded-xl bg-surface-muted p-4 sm:grid-cols-2">
-      <label class="text-sm font-medium">מזהה שדה<input class="mt-1 w-full rounded-lg border border-border px-3 py-2" [ngModel]="newField().key" (ngModelChange)="newField.set({ ...newField(), key: $event })" placeholder="schoolYear" /></label>
-      <label class="text-sm font-medium">שם שדה<input class="mt-1 w-full rounded-lg border border-border px-3 py-2" [ngModel]="newField().label" (ngModelChange)="newField.set({ ...newField(), label: $event })" /></label>
-      <label class="text-sm font-medium">סוג<input class="mt-1 w-full rounded-lg border border-border px-3 py-2" [ngModel]="newField().type" (ngModelChange)="newField.set({ ...newField(), type: $event })" /></label>
-      <label class="flex items-center gap-2 pt-6 text-sm font-medium"><input type="checkbox" [ngModel]="newField().required" (ngModelChange)="newField.set({ ...newField(), required: $event })" /> שדה חובה</label>
-      <button class="justify-self-start rounded-lg border border-primary-foreground px-4 py-2 font-medium text-primary-foreground hover:bg-surface-hover" type="button" (click)="addField()">הוספת שדה</button>
+      <app-form-field label="מזהה שדה"><input appFormControl [ngModel]="newField().key" (ngModelChange)="newField.set({ ...newField(), key: $event })" placeholder="schoolYear" /></app-form-field>
+      <app-form-field label="שם שדה"><input appFormControl [ngModel]="newField().label" (ngModelChange)="newField.set({ ...newField(), label: $event })" /></app-form-field>
+      <app-form-field label="סוג"><select appFormControl [ngModel]="newField().type" (ngModelChange)="newField.set({ ...newField(), type: $event, optionsText: $event === 'select' ? newField().optionsText : '' })"><option value="text">טקסט</option><option value="email">דוא״ל</option><option value="tel">טלפון</option><option value="number">מספר</option><option value="date">תאריך</option><option value="textarea">טקסט ארוך</option><option value="select">רשימת בחירה</option><option value="checkbox">אישור</option></select></app-form-field>
+      @if (newField().type === 'select') { <app-form-field class="sm:col-span-2" label="אפשרויות בחירה"><input appFormControl [ngModel]="newField().optionsText" (ngModelChange)="newField.set({ ...newField(), optionsText: $event })" placeholder="אפשרות 1, אפשרות 2" /></app-form-field> }
+      <app-form-field label="שדה פרופיל (אופציונלי)"><select appFormControl [ngModel]="newField().profileKey" (ngModelChange)="newField.set({ ...newField(), profileKey: $event || null })"><option value="">ללא</option><option value="firstName">שם פרטי</option><option value="lastName">שם משפחה</option><option value="phone">טלפון</option><option value="idNumber">מספר זהות</option></select></app-form-field>
+      <label class="flex items-center gap-2 pt-6 text-sm font-medium"><input appCheckbox type="checkbox" [ngModel]="newField().required" (ngModelChange)="newField.set({ ...newField(), required: $event })" /> שדה חובה</label>
+      <app-button class="justify-self-start" text="הוספת שדה" variant="secondary" (pressed)="addField()" />
     </div>
     <ul class="mt-5 divide-y divide-border">
-      @for (field of fields(); track field.key) { <li class="flex items-center justify-between gap-4 py-3"><span><strong>{{ field.label }}</strong><span class="mr-2 text-sm text-text-muted">{{ field.key }} · {{ field.type }}</span></span><button class="text-sm font-semibold text-danger underline hover:text-danger-hover" type="button" (click)="removeField(field.key)">הסרה</button></li> }
+      @for (field of fields(); track field.key) { <li class="flex items-center justify-between gap-4 py-3"><span><strong>{{ field.label }}</strong><span class="mr-2 text-sm text-text-muted">{{ field.key }} · {{ field.type }}</span></span><app-button text="הסרה" variant="text" size="small" (pressed)="removeField(field.key)" /></li> }
       @empty { <li class="py-3 text-text-muted">עדיין לא נוספו שדות.</li> }
     </ul>
-    <div class="mt-6 flex flex-wrap gap-3"><button class="rounded-lg bg-secondary px-4 py-2 font-medium text-secondary-foreground hover:bg-secondary-hover" type="button" (click)="saveDraft()">שמירת טיוטה</button><button class="rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground hover:bg-primary-hover" type="button" (click)="publish()">פרסום</button></div>
+    <div class="mt-6 flex flex-wrap gap-3"><app-button text="שמירת טיוטה" variant="secondary" (pressed)="saveDraft()" /><app-button text="פתיחה או עדכון הרשמה" (pressed)="publish()" />@if (status() === 'published') { <app-button text="סגירה מידית" variant="destructive" (pressed)="close()" /> }</div>
     @if (message(); as message) { <p class="mt-4 text-sm text-text" role="status">{{ message }}</p> }
   </section>
 </main>

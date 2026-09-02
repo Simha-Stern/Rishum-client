@@ -1,0 +1,16 @@
+<header class="sticky top-0 z-40 border-b border-border bg-surface shadow-sm" dir="rtl">
+  <nav class="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8" aria-label="ניווט ראשי">
+    <app-link class="shrink-0 text-lg font-bold" text="רישום פלוס" routerLink="/" appearance="navigation" />
+    <div class="flex items-center gap-4 text-sm font-medium sm:gap-6">
+      <app-link text="דף הבית" routerLink="/" appearance="navigation" />
+      @if (auth.user()) {
+        @if (auth.user()?.isSystemAdmin) {
+          <app-link text="ניהול מוסדות" routerLink="/admin/institutions" appearance="navigation" />
+        }
+        <app-link text="החשבון שלי" routerLink="/account" appearance="navigation" />
+      } @else {
+        <app-link text="כניסה" routerLink="/login" appearance="navigation" />
+      }
+    </div>
+  </nav>
+</header>

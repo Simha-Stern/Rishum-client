@@ -1,15 +1,21 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
+import { UiButton } from '../../../../shared/components/ui/ui-button';
+import { UiFormControl } from '../../../../shared/components/ui/ui-form-control.directive';
+import { UiFormField } from '../../../../shared/components/ui/ui-form-field';
+import { UiHeading } from '../../../../shared/components/ui/ui-heading';
+import { UiLink } from '../../../../shared/components/ui/ui-link';
 
 @Component({
   selector: 'app-account',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, UiButton, UiFormControl, UiFormField, UiHeading, UiLink],
   templateUrl: './account.html',
 })
 export class Account {
   private readonly formBuilder = inject(FormBuilder);
+  private readonly router = inject(Router);
   protected readonly auth = inject(AuthService);
   protected readonly isSaving = signal(false);
   protected readonly saved = signal(false);
@@ -37,6 +43,6 @@ export class Account {
   }
 
   protected logout(): void {
-    this.auth.logout().subscribe();
+    this.auth.logout().subscribe(() => void this.router.navigateByUrl('/'));
   }
 }

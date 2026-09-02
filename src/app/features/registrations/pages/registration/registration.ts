@@ -1,12 +1,16 @@
+import { DatePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
 import { PublicRegistrationForm, RegistrationFlowService } from '../../services/registration-flow.service';
+import { UiButton } from '../../../../shared/components/ui/ui-button';
+import { UiCheckbox, UiFormControl } from '../../../../shared/components/ui/ui-form-control.directive';
+import { UiHeading } from '../../../../shared/components/ui/ui-heading';
 
 @Component({
   selector: 'app-registration',
-  imports: [ReactiveFormsModule],
+  imports: [DatePipe, ReactiveFormsModule, UiButton, UiCheckbox, UiFormControl, UiHeading],
   templateUrl: './registration.html',
 })
 export class Registration {
@@ -14,7 +18,7 @@ export class Registration {
   private readonly service = inject(RegistrationFlowService);
   private readonly auth = inject(AuthService);
   private readonly institutionId = this.route.snapshot.paramMap.get('institutionId')!;
-  protected readonly form = new FormGroup<Record<string, FormControl<string>>>({});
+  protected readonly form = new FormGroup<Record<string, FormControl<string | boolean>>>({});
   protected readonly registrationForm = signal<PublicRegistrationForm | null>(null);
   protected readonly message = signal<string | null>(null);
   protected readonly isSubmitting = signal(false);
@@ -24,8 +28,11 @@ export class Registration {
       next: (registrationForm) => {
         const profile = this.auth.user();
         for (const field of registrationForm.fields) {
-          const initialValue = field.profileKey && profile ? String(profile[field.profileKey] ?? '') : '';
-          this.form.addControl(field.key, new FormControl(initialValue, { nonNullable: true, validators: field.required ? [Validators.required] : [] }));
+          const initialValue = field.type === 'checkbox' ? false : field.profileKey && profile ? String(profile[field.profileKey] ?? '') : '';
+          this.form.addControl(field.key, new FormControl(initialValue, {
+            nonNullable: true,
+            validators: field.required ? [field.type === 'checkbox' ? Validators.requiredTrue : Validators.required] : [],
+          }));
         }
         this.registrationForm.set(registrationForm);
       },

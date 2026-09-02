@@ -57,7 +57,7 @@ export class AuthService {
 
   hasInstitutionRole(institutionId: string, role: InstitutionRole): boolean {
     const session = this.sessionState();
-    return !!session && (session.user.isSystemAdmin || session.memberships.some((membership) => membership.institutionId === institutionId && membership.role === role));
+    return !!session && session.memberships.some((membership) => membership.institutionId === institutionId && membership.role === role);
   }
 
   getToken(): string | null {

@@ -13,14 +13,14 @@ export interface RegistrationField {
 }
 
 export interface RegistrationFlow {
-  flow: { name: string; status: string; publishedVersion: number | null };
+  flow: { name: string; status: 'draft' | 'published' | 'closed'; publishedVersion: number | null; closesAt: string | null };
   version: { id: string; version: number } | null;
   fields: RegistrationField[];
 }
 
 export interface PublicRegistrationForm {
   institutionId: string;
-  flow: { name: string; version: number };
+  flow: { name: string; version: number; closesAt: string };
   fields: RegistrationField[];
 }
 
@@ -38,8 +38,12 @@ export class RegistrationFlowService {
     return this.http.put<{ id: string; version: number }>(`/api/institutions/${institutionId}/registration-flow`, input);
   }
 
-  publish(institutionId: string, version: number) {
-    return this.http.post<void>(`/api/institutions/${institutionId}/registration-flow/publish`, { version });
+  publish(institutionId: string, version: number, closesAt: string) {
+    return this.http.post<void>(`/api/institutions/${institutionId}/registration-flow/publish`, { version, closesAt });
+  }
+
+  close(institutionId: string) {
+    return this.http.post<void>(`/api/institutions/${institutionId}/registration-flow/close`, {});
   }
 
   getPublicForm(institutionId: string) {

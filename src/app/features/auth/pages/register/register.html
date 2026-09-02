@@ -1,23 +1,23 @@
 <main id="main-content" class="mx-auto flex min-h-screen max-w-lg items-center px-4 py-10" dir="rtl">
   <section class="w-full rounded-2xl border border-border bg-surface p-6 shadow-sm">
-    <h1 class="text-2xl font-bold text-text">יצירת חשבון</h1>
+    <app-heading text="יצירת חשבון" level="1" size="subsection" />
     <p class="mt-2 text-text-muted">נשמור את פרטי הבסיס, כדי שההרשמה הבאה תהיה מהירה יותר.</p>
 
     <form class="mt-6 grid gap-4 sm:grid-cols-2" [formGroup]="form" (ngSubmit)="submit()">
-      <label class="block text-sm font-medium text-text">שם פרטי<input class="mt-1 w-full rounded-lg border border-border px-3 py-2" formControlName="firstName" autocomplete="given-name" [attr.aria-invalid]="form.controls.firstName.invalid && form.controls.firstName.touched" /></label>
-      <label class="block text-sm font-medium text-text">שם משפחה<input class="mt-1 w-full rounded-lg border border-border px-3 py-2" formControlName="lastName" autocomplete="family-name" [attr.aria-invalid]="form.controls.lastName.invalid && form.controls.lastName.touched" /></label>
-      <label class="block sm:col-span-2 text-sm font-medium text-text">אימייל<input class="mt-1 w-full rounded-lg border border-border px-3 py-2" formControlName="email" type="email" autocomplete="email" [attr.aria-invalid]="form.controls.email.invalid && form.controls.email.touched" /></label>
-      <label class="block text-sm font-medium text-text">טלפון (אופציונלי)<input class="mt-1 w-full rounded-lg border border-border px-3 py-2" formControlName="phone" type="tel" autocomplete="tel" /></label>
-      <label class="block text-sm font-medium text-text">תעודת זהות (אופציונלי)<input class="mt-1 w-full rounded-lg border border-border px-3 py-2" formControlName="idNumber" autocomplete="off" /></label>
-      <label class="block sm:col-span-2 text-sm font-medium text-text">סיסמה<input class="mt-1 w-full rounded-lg border border-border px-3 py-2" formControlName="password" type="password" autocomplete="new-password" [attr.aria-invalid]="form.controls.password.invalid && form.controls.password.touched" /><span class="mt-1 block font-normal text-text-muted">לפחות 10 תווים</span></label>
+      <app-form-field label="שם פרטי"><input appFormControl formControlName="firstName" autocomplete="given-name" [attr.aria-invalid]="form.controls.firstName.invalid && form.controls.firstName.touched" /></app-form-field>
+      <app-form-field label="שם משפחה"><input appFormControl formControlName="lastName" autocomplete="family-name" [attr.aria-invalid]="form.controls.lastName.invalid && form.controls.lastName.touched" /></app-form-field>
+      <app-form-field class="sm:col-span-2" label="אימייל"><input appFormControl formControlName="email" type="email" autocomplete="email" [attr.aria-invalid]="form.controls.email.invalid && form.controls.email.touched" /></app-form-field>
+      <app-form-field label="טלפון (אופציונלי)"><input appFormControl formControlName="phone" type="tel" autocomplete="tel" /></app-form-field>
+      <app-form-field label="תעודת זהות (אופציונלי)"><input appFormControl formControlName="idNumber" autocomplete="off" /></app-form-field>
+      <app-form-field class="sm:col-span-2" label="סיסמה" helpText="לפחות 10 תווים"><input appFormControl formControlName="password" type="password" autocomplete="new-password" [attr.aria-invalid]="form.controls.password.invalid && form.controls.password.touched" /></app-form-field>
       @if (form.invalid && (form.controls.firstName.touched || form.controls.lastName.touched || form.controls.email.touched || form.controls.password.touched)) {
         <p class="sm:col-span-2 rounded-lg border border-danger bg-accent p-3 text-sm text-accent-foreground" role="alert">יש למלא את שדות החובה ולהזין כתובת אימייל וסיסמה תקינים.</p>
       }
       @if (errorMessage(); as error) {
         <p class="sm:col-span-2 rounded-lg border border-danger bg-accent p-3 text-sm text-accent-foreground" role="alert">{{ error }}</p>
       }
-      <button class="sm:col-span-2 rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground hover:bg-primary-hover disabled:cursor-not-allowed disabled:bg-disabled disabled:text-disabled-foreground disabled:opacity-100" type="submit" [disabled]="isSubmitting()" [attr.aria-busy]="isSubmitting()">{{ isSubmitting() ? 'יוצר חשבון…' : 'יצירת חשבון' }}</button>
+      <app-button class="sm:col-span-2" [text]="isSubmitting() ? 'יוצר חשבון…' : 'יצירת חשבון'" buttonType="submit" [disabled]="isSubmitting()" [busy]="isSubmitting()" />
     </form>
-    <p class="mt-5 text-sm text-text-muted">כבר יש חשבון? <a class="font-semibold text-primary-foreground underline" routerLink="/login">כניסה</a></p>
+    <p class="mt-5 text-sm text-text-muted">כבר יש חשבון? <app-link text="כניסה" routerLink="/login" [queryParams]="{ returnUrl }" /></p>
   </section>
 </main>

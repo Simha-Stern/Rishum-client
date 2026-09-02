@@ -2,9 +2,7 @@
   <header class="border-b border-border bg-surface">
     <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <p class="mb-2 text-sm font-semibold text-primary-foreground">רישום פלוס</p>
-      <h1 class="text-3xl font-bold tracking-tight text-text sm:text-4xl">
-        מוסדות פתוחים להרשמה
-      </h1>
+      <app-heading text="מוסדות פתוחים להרשמה" level="1" size="page" />
       <p class="mt-3 max-w-2xl text-text-muted">
         בחרו מוסד כדי להתחיל את תהליך ההרשמה.
       </p>
@@ -12,6 +10,24 @@
   </header>
 
   <section class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8" aria-live="polite">
+    @if (workspaces().length) {
+      <section class="mb-10 rounded-2xl border border-border bg-surface p-5 sm:p-6" aria-labelledby="workspaces-heading">
+        <app-heading text="המרחבים שלי" level="2" headingId="workspaces-heading" />
+        <p class="mt-1 text-sm text-text-muted">כניסה מהירה לכלי הניהול לפי ההרשאה שלך.</p>
+        <ul class="mt-4 grid gap-3 md:grid-cols-2">
+          @for (workspace of workspaces(); track workspace.institution.id) {
+            <li class="flex flex-col gap-3 rounded-xl border border-border p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div><p class="font-semibold text-text">{{ workspace.institution.name }}</p><p class="text-sm text-text-muted">{{ workspace.role === 'manager' ? 'מנהל/ת מוסד' : 'מזכיר/ה' }}</p></div>
+              @if (workspace.role === 'manager') {
+                <app-link text="דשבורד ההרשמות" [routerLink]="['/institutions', workspace.institution.id, 'analytics']" appearance="button" />
+              } @else {
+                <app-link text="עריכת ההרשמה" [routerLink]="['/institutions', workspace.institution.id, 'registration-editor']" appearance="button" />
+              }
+            </li>
+          }
+        </ul>
+      </section>
+    }
     @if (isLoading()) {
       <p class="rounded-xl border border-border bg-surface p-8 text-center text-text-muted">
         טוען מוסדות…
@@ -19,13 +35,7 @@
     } @else if (hasError()) {
       <div class="rounded-xl border border-danger bg-accent p-8 text-center" role="alert">
         <p class="font-medium text-accent-foreground">לא הצלחנו לטעון את רשימת המוסדות.</p>
-        <button
-          type="button"
-          class="mt-4 rounded-lg bg-danger px-4 py-2 font-medium text-danger-foreground hover:bg-danger-hover"
-          (click)="loadInstitutions()"
-        >
-          נסו שוב
-        </button>
+        <app-button class="mt-4 block" text="נסו שוב" variant="destructive" (pressed)="loadInstitutions()" />
       </div>
     } @else if (institutions().length === 0) {
       <p class="rounded-xl border border-border bg-surface p-8 text-center text-text-muted">

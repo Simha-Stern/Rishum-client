@@ -31,13 +31,17 @@ export const routes: Routes = [
     loadComponent: () => import('./features/institutions/pages/analytics/analytics').then(({ Analytics }) => Analytics),
   },
   {
+    path: 'institutions/:institutionId/manage',
+    canActivate: [institutionRoleGuard('manager')],
+    loadComponent: () => import('./features/institutions/pages/institution-management/institution-management').then(({ InstitutionManagement }) => InstitutionManagement),
+  },
+  {
     path: 'institutions/:institutionId/registration-editor',
     canActivate: [institutionRoleGuard('secretary')],
     loadComponent: () => import('./features/registrations/pages/registration-editor/registration-editor').then(({ RegistrationEditor }) => RegistrationEditor),
   },
   {
     path: 'institutions/:institutionId/register',
-    canActivate: [authenticatedGuard],
     loadComponent: () => import('./features/registrations/pages/registration/registration').then(({ Registration }) => Registration),
   },
   { path: '**', redirectTo: '' },
