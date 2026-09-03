@@ -2,23 +2,109 @@
   @if (registrationForm(); as data) {
     <p class="text-sm font-semibold text-primary-foreground">הרשמה מקוונת</p>
     <app-heading class="mt-1 block" [text]="data.flow.name" level="1" size="page" />
-    <p class="mt-2 text-sm text-text-muted">ההרשמה פתוחה עד {{ data.flow.closesAt | date:'short':'':'he-IL' }}.</p>
+    <p class="mt-2 text-sm text-text-muted">
+      ההרשמה פתוחה עד {{ data.flow.closesAt | date: 'short' : '' : 'he-IL' }}.
+    </p>
     <p class="mt-2 text-text-muted">פרטים שמורים מהפרופיל שלך כבר מולאו. אפשר לעדכן לפני השליחה.</p>
-    <form class="mt-6 space-y-5 rounded-2xl border border-border bg-surface p-6" [formGroup]="form" (ngSubmit)="submit()">
+    <form
+      class="mt-6 space-y-5 rounded-2xl border border-border bg-surface p-6"
+      [formGroup]="form"
+      (ngSubmit)="submit()"
+    >
       @for (field of data.fields; track field.id) {
         <label class="block text-sm font-medium text-text">
-          {{ field.label }} @if (field.required) { <span class="text-danger" aria-label="שדה חובה">*</span> }
-          @switch (field.type) {
-            @case ('textarea') { <textarea appFormControl class="min-h-28" [formControlName]="field.key" [attr.aria-invalid]="form.controls[field.key].invalid && form.controls[field.key].touched" [attr.aria-describedby]="form.controls[field.key].invalid && form.controls[field.key].touched ? 'field-error-' + field.id : null"></textarea> }
-            @case ('select') { <select appFormControl [formControlName]="field.key" [attr.aria-invalid]="form.controls[field.key].invalid && form.controls[field.key].touched" [attr.aria-describedby]="form.controls[field.key].invalid && form.controls[field.key].touched ? 'field-error-' + field.id : null"><option value="">בחירה</option>@for (option of field.options; track option) { <option [value]="option">{{ option }}</option> }</select> }
-            @case ('checkbox') { <input appCheckbox [formControlName]="field.key" type="checkbox" [attr.aria-invalid]="form.controls[field.key].invalid && form.controls[field.key].touched" [attr.aria-describedby]="form.controls[field.key].invalid && form.controls[field.key].touched ? 'field-error-' + field.id : null" /> }
-            @default { <input appFormControl [formControlName]="field.key" [type]="field.type" [attr.aria-invalid]="form.controls[field.key].invalid && form.controls[field.key].touched" [attr.aria-describedby]="form.controls[field.key].invalid && form.controls[field.key].touched ? 'field-error-' + field.id : null" /> }
+          {{ field.label }}
+          @if (field.required) {
+            <span class="text-danger" aria-label="שדה חובה">*</span>
           }
-          @if (form.controls[field.key].invalid && form.controls[field.key].touched) { <span [id]="'field-error-' + field.id" class="mt-1 block text-xs text-danger" role="alert">שדה חובה</span> }
+          @switch (field.type) {
+            @case ('textarea') {
+              <textarea
+                appFormControl
+                class="min-h-28"
+                [formControlName]="field.key"
+                [attr.aria-invalid]="
+                  form.controls[field.key].invalid && form.controls[field.key].touched
+                "
+                [attr.aria-describedby]="
+                  form.controls[field.key].invalid && form.controls[field.key].touched
+                    ? 'field-error-' + field.id
+                    : null
+                "
+              ></textarea>
+            }
+            @case ('select') {
+              <select
+                appFormControl
+                [formControlName]="field.key"
+                [attr.aria-invalid]="
+                  form.controls[field.key].invalid && form.controls[field.key].touched
+                "
+                [attr.aria-describedby]="
+                  form.controls[field.key].invalid && form.controls[field.key].touched
+                    ? 'field-error-' + field.id
+                    : null
+                "
+              >
+                <option value="">בחירה</option>
+                @for (option of field.options; track option) {
+                  <option [value]="option">{{ option }}</option>
+                }
+              </select>
+            }
+            @case ('checkbox') {
+              <input
+                appCheckbox
+                [formControlName]="field.key"
+                type="checkbox"
+                [attr.aria-invalid]="
+                  form.controls[field.key].invalid && form.controls[field.key].touched
+                "
+                [attr.aria-describedby]="
+                  form.controls[field.key].invalid && form.controls[field.key].touched
+                    ? 'field-error-' + field.id
+                    : null
+                "
+              />
+            }
+            @default {
+              <input
+                appFormControl
+                [formControlName]="field.key"
+                [type]="field.type"
+                [attr.aria-invalid]="
+                  form.controls[field.key].invalid && form.controls[field.key].touched
+                "
+                [attr.aria-describedby]="
+                  form.controls[field.key].invalid && form.controls[field.key].touched
+                    ? 'field-error-' + field.id
+                    : null
+                "
+              />
+            }
+          }
+          @if (form.controls[field.key].invalid && form.controls[field.key].touched) {
+            <span
+              [id]="'field-error-' + field.id"
+              class="mt-1 block text-xs text-danger"
+              role="alert"
+              >שדה חובה</span
+            >
+          }
         </label>
       }
-      <app-button [text]="isSubmitting() ? 'שולח…' : 'שליחת הרשמה'" buttonType="submit" size="large" [disabled]="isSubmitting()" [busy]="isSubmitting()" />
+      <app-button
+        [text]="isSubmitting() ? 'שולח…' : 'שליחת הרשמה'"
+        buttonType="submit"
+        size="large"
+        [disabled]="isSubmitting()"
+        [busy]="isSubmitting()"
+      />
     </form>
   }
-  @if (message(); as message) { <p class="mt-5 rounded-xl border border-border bg-surface-muted p-4 text-text" role="status">{{ message }}</p> }
+  @if (message(); as message) {
+    <p class="mt-5 rounded-xl border border-border bg-surface-muted p-4 text-text" role="status">
+      {{ message }}
+    </p>
+  }
 </main>

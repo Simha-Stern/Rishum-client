@@ -1,0 +1,86 @@
+<app-button text="הזמנת חבר צוות" (pressed)="open()" />
+
+<app-dialog
+  [(open)]="isOpen"
+  title="הזמנת חברי צוות"
+  description="הזינו כתובת אימייל אחת בכל שדה. אפשר להוסיף שדות לפי הצורך."
+>
+  <form (ngSubmit)="invite()">
+    <label class="block text-sm font-medium text-text" for="invite-role">תפקיד למוזמנים</label>
+    <select
+      appFormControl
+      id="invite-role"
+      class="mt-1"
+      [ngModel]="inviteRole()"
+      (ngModelChange)="inviteRole.set($event)"
+      name="inviteRole"
+      [disabled]="isSubmitting()"
+    >
+      <option value="secretary">מזכיר/ה</option>
+      <option value="manager">מנהל/ת מוסד</option>
+    </select>
+
+    <div class="mt-4 space-y-3" aria-describedby="team-email-help">
+      @for (email of emailInputs(); track $index; let index = $index) {
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <label class="sr-only" [attr.for]="'team-email-' + index"
+            >כתובת אימייל של חבר/ת צוות</label
+          >
+          <input
+            appFormControl
+            class="flex-1"
+            [id]="'team-email-' + index"
+            [ngModel]="email"
+            (ngModelChange)="updateEmailInput(index, $event)"
+            [name]="'teamEmail' + index"
+            type="email"
+            autocomplete="email"
+            [disabled]="isSubmitting()"
+          />
+          @if (emailInputs().length > 1) {
+            <app-button
+              text="הסרה"
+              variant="text"
+              size="small"
+              [disabled]="isSubmitting()"
+              (pressed)="removeEmailInput(index)"
+            />
+          }
+        </div>
+      }
+    </div>
+    <app-button
+      class="mt-3 block"
+      text="הוספת שדה אימייל"
+      variant="secondary"
+      size="small"
+      [disabled]="isSubmitting()"
+      (pressed)="addEmailInput()"
+    />
+    <p id="team-email-help" class="mt-2 text-sm text-text-muted">
+      למנהלי מוסד יש גישה לדשבורד ולניהול הצוות; מזכירים מנהלים את תהליך ההרשמה.
+    </p>
+    @if (message(); as currentMessage) {
+      <p
+        class="mt-4 rounded-lg border border-danger bg-accent p-3 text-sm text-accent-foreground"
+        role="alert"
+      >
+        {{ currentMessage }}
+      </p>
+    }
+    <div class="mt-6 flex flex-wrap gap-3">
+      <app-button
+        buttonType="submit"
+        [text]="
+          isSubmitting()
+            ? 'שולח הזמנות…'
+            : inviteRole() === 'manager'
+              ? 'הזמנת מנהלי מוסד'
+              : 'הזמנת מזכירים'
+        "
+        [disabled]="isSubmitting()"
+        [busy]="isSubmitting()"
+      />
+    </div>
+  </form>
+</app-dialog>

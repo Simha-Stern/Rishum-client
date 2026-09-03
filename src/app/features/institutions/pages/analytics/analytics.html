@@ -1,8 +1,30 @@
 <main id="main-content" class="mx-auto max-w-4xl px-4 py-10" dir="rtl">
   <p class="text-sm font-semibold text-primary-foreground">ניהול מוסד</p>
-  <div class="mt-1 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><app-heading text="אנליטיקות הרשמה" level="1" size="page" /><app-link text="ניהול צוות המוסד" [routerLink]="['/institutions', institutionId, 'manage']" appearance="button" variant="secondary" /></div>
+  <app-heading class="mt-1 block" text="דשבורד ההרשמות" level="1" size="page" />
   @if (analytics(); as data) {
-    <section class="mt-6 rounded-2xl bg-primary p-6 text-primary-foreground"><p class="text-sm">סה״כ הרשמות</p><p class="mt-1 text-4xl font-bold">{{ data.totalRegistrations }}</p></section>
-    <section class="mt-6 rounded-2xl border border-border bg-surface p-6"><app-heading text="לפי סטטוס" level="2" /><ul class="mt-4 divide-y divide-border">@for (item of data.byStatus; track item.status) { <li class="flex justify-between py-3"><span>{{ item.status }}</span><strong>{{ item.total }}</strong></li> }</ul></section>
-  } @else if (hasError()) { <p class="mt-6 rounded-xl border border-danger bg-accent p-4 text-accent-foreground" role="alert">לא ניתן לטעון את הנתונים.</p> } @else { <p class="mt-6 text-text-muted" role="status">טוען נתונים…</p> }
+    <section class="mt-6 rounded-2xl bg-primary p-6 text-primary-foreground">
+      <p class="text-sm">סה״כ הרשמות</p>
+      <p class="mt-1 text-4xl font-bold">{{ data.totalRegistrations }}</p>
+    </section>
+    <section class="mt-6 rounded-2xl border border-border bg-surface p-6">
+      <app-heading text="לפי סטטוס" level="2" />
+      <ul class="mt-4 divide-y divide-border">
+        @for (item of data.byStatus; track item.status) {
+          <li class="flex justify-between py-3">
+            <span>{{ item.status }}</span
+            ><strong>{{ item.total }}</strong>
+          </li>
+        }
+      </ul>
+    </section>
+  } @else if (hasError()) {
+    <p
+      class="mt-6 rounded-xl border border-danger bg-accent p-4 text-accent-foreground"
+      role="alert"
+    >
+      לא ניתן לטעון את הנתונים.
+    </p>
+  } @else {
+    <p class="mt-6 text-text-muted" role="status">טוען נתונים…</p>
+  }
 </main>

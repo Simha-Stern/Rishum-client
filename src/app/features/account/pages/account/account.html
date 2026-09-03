@@ -2,7 +2,12 @@
   <div class="flex items-start justify-between gap-4">
     <div>
       <p class="text-sm font-semibold text-primary-foreground">אזור אישי</p>
-      <app-heading class="mt-1 block" [text]="'שלום, ' + (auth.user()?.firstName ?? '')" level="1" size="page" />
+      <app-heading
+        class="mt-1 block"
+        [text]="'שלום, ' + (auth.user()?.firstName ?? '')"
+        level="1"
+        size="page"
+      />
       <p class="mt-2 text-text-muted">פרטים אלו ישמשו למילוי אוטומטי בהרשמות עתידיות.</p>
     </div>
     <app-button text="התנתקות" variant="secondary" size="small" (pressed)="logout()" />
@@ -11,32 +16,45 @@
   <section class="mt-8 rounded-2xl border border-border bg-surface p-6">
     <app-heading text="הפרופיל שלי" level="2" />
     <form class="mt-5 grid gap-4 sm:grid-cols-2" [formGroup]="form" (ngSubmit)="save()">
-      <app-form-field label="שם פרטי"><input appFormControl formControlName="firstName" autocomplete="given-name" [attr.aria-invalid]="form.controls.firstName.invalid && form.controls.firstName.touched" /></app-form-field>
-      <app-form-field label="שם משפחה"><input appFormControl formControlName="lastName" autocomplete="family-name" [attr.aria-invalid]="form.controls.lastName.invalid && form.controls.lastName.touched" /></app-form-field>
-      <app-form-field label="טלפון"><input appFormControl formControlName="phone" type="tel" autocomplete="tel" /></app-form-field>
-      <app-form-field label="תעודת זהות"><input appFormControl formControlName="idNumber" autocomplete="off" /></app-form-field>
+      <app-form-field label="שם פרטי"
+        ><input
+          appFormControl
+          formControlName="firstName"
+          autocomplete="given-name"
+          [attr.aria-invalid]="form.controls.firstName.invalid && form.controls.firstName.touched"
+      /></app-form-field>
+      <app-form-field label="שם משפחה"
+        ><input
+          appFormControl
+          formControlName="lastName"
+          autocomplete="family-name"
+          [attr.aria-invalid]="form.controls.lastName.invalid && form.controls.lastName.touched"
+      /></app-form-field>
+      <app-form-field label="טלפון"
+        ><input appFormControl formControlName="phone" type="tel" autocomplete="tel"
+      /></app-form-field>
+      <app-form-field label="תעודת זהות"
+        ><input appFormControl formControlName="idNumber" autocomplete="off"
+      /></app-form-field>
       @if (form.invalid && (form.controls.firstName.touched || form.controls.lastName.touched)) {
-        <p class="sm:col-span-2 rounded-lg border border-danger bg-accent p-3 text-sm text-accent-foreground" role="alert">יש למלא שם פרטי ושם משפחה.</p>
+        <p
+          class="sm:col-span-2 rounded-lg border border-danger bg-accent p-3 text-sm text-accent-foreground"
+          role="alert"
+        >
+          יש למלא שם פרטי ושם משפחה.
+        </p>
       }
       <div class="sm:col-span-2 flex items-center gap-4">
-        <app-button text="שמירת פרטים" buttonType="submit" [disabled]="isSaving()" [busy]="isSaving()" />
-        @if (saved()) { <p class="text-sm text-primary-foreground" role="status">הפרטים נשמרו.</p> }
+        <app-button
+          text="שמירת פרטים"
+          buttonType="submit"
+          [disabled]="isSaving()"
+          [busy]="isSaving()"
+        />
+        @if (saved()) {
+          <p class="text-sm text-primary-foreground" role="status">הפרטים נשמרו.</p>
+        }
       </div>
     </form>
-  </section>
-
-  <section class="mt-6 rounded-2xl border border-border bg-surface p-6">
-    <app-heading text="ניהול מוסדות" level="2" />
-    @if (auth.user()?.isSystemAdmin) {
-      <app-link class="mt-4 block" text="ניהול כל המוסדות" routerLink="/admin/institutions" />
-    }
-    @for (membership of memberships(); track membership.institutionId) {
-      <div class="mt-4 flex flex-wrap gap-3 rounded-lg bg-surface-muted p-4 text-sm">
-        @if (membership.role === 'manager') { <app-link text="אנליטיקות המוסד" [routerLink]="['/institutions', membership.institutionId, 'analytics']" /> }
-        @if (membership.role === 'secretary') { <app-link text="עריכת תהליך ההרשמה" [routerLink]="['/institutions', membership.institutionId, 'registration-editor']" /> }
-      </div>
-    } @empty {
-      @if (!auth.user()?.isSystemAdmin) { <p class="mt-3 text-text-muted">אין לך כרגע תפקיד ניהולי במוסד.</p> }
-    }
   </section>
 </main>

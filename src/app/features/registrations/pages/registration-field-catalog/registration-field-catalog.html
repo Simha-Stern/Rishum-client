@@ -1,0 +1,106 @@
+<main id="main-content" class="mx-auto max-w-5xl px-4 py-10" dir="rtl">
+  <p class="text-sm font-semibold text-primary-foreground">ניהול מערכת</p>
+  <app-heading class="mt-1 block" text="מאגר שדות הרשמה" level="1" size="page" />
+  <p class="mt-2 max-w-3xl text-text-muted">
+    שדות אלה זמינים למזכירי המוסדות בעת יצירת או עריכת תהליך הרשמה.
+  </p>
+
+  <section
+    class="mt-6 rounded-2xl border border-border bg-surface p-5 sm:p-6"
+    aria-labelledby="add-catalog-field-heading"
+  >
+    <app-heading text="הוספת שדה למאגר" level="2" headingId="add-catalog-field-heading" />
+    <form class="mt-5 grid gap-4 sm:grid-cols-2" [formGroup]="form" (ngSubmit)="create()">
+      <app-form-field
+        label="מזהה שדה"
+        helpId="catalog-key-help"
+        helpText="אותיות באנגלית, מספרים וקו תחתון בלבד."
+        ><input
+          appFormControl
+          formControlName="key"
+          placeholder="birthDate"
+          aria-describedby="catalog-key-help"
+          [attr.aria-invalid]="form.controls.key.invalid && form.controls.key.touched"
+      /></app-form-field>
+      <app-form-field label="שם להצגה"
+        ><input
+          appFormControl
+          formControlName="label"
+          [attr.aria-invalid]="form.controls.label.invalid && form.controls.label.touched"
+      /></app-form-field>
+      <app-form-field label="סוג שדה"
+        ><select appFormControl formControlName="type">
+          <option value="text">טקסט</option>
+          <option value="email">דואר אלקטרוני</option>
+          <option value="tel">טלפון</option>
+          <option value="number">מספר</option>
+          <option value="date">תאריך</option>
+          <option value="textarea">טקסט ארוך</option>
+          <option value="select">רשימת בחירה</option>
+          <option value="checkbox">אישור</option>
+        </select></app-form-field
+      >
+      <app-form-field label="שדה פרופיל (אופציונלי)"
+        ><select appFormControl formControlName="profileKey">
+          <option value="">ללא</option>
+          <option value="firstName">שם פרטי</option>
+          <option value="lastName">שם משפחה</option>
+          <option value="phone">טלפון</option>
+          <option value="idNumber">תעודת זהות</option>
+        </select></app-form-field
+      >
+      @if (form.controls.type.value === 'select') {
+        <app-form-field class="sm:col-span-2" label="אפשרויות בחירה"
+          ><input appFormControl formControlName="optionsText" placeholder="אפשרות א, אפשרות ב"
+        /></app-form-field>
+      }
+      @if (form.invalid && (form.controls.key.touched || form.controls.label.touched)) {
+        <p
+          class="sm:col-span-2 rounded-lg border border-danger bg-accent p-3 text-sm text-accent-foreground"
+          role="alert"
+        >
+          יש למלא מזהה ושם שדה תקינים.
+        </p>
+      }
+      <app-button class="justify-self-start" text="הוספת שדה" buttonType="submit" />
+    </form>
+    @if (message(); as currentMessage) {
+      <p class="mt-4 text-sm text-text" role="status">{{ currentMessage }}</p>
+    }
+  </section>
+
+  <section
+    class="mt-6 rounded-2xl border border-border bg-surface p-5 sm:p-6"
+    aria-labelledby="catalog-list-heading"
+  >
+    <app-heading text="שדות זמינים" level="2" headingId="catalog-list-heading" />
+    <div class="mt-4 overflow-x-auto">
+      <table class="min-w-full text-right text-sm">
+        <thead class="border-b border-border text-text-muted">
+          <tr>
+            <th class="px-3 py-3 font-medium" scope="col">שם</th>
+            <th class="px-3 py-3 font-medium" scope="col">מזהה</th>
+            <th class="px-3 py-3 font-medium" scope="col">סוג</th>
+            <th class="px-3 py-3 font-medium" scope="col">אפשרויות</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (field of fields(); track field.id) {
+            <tr class="border-b border-border last:border-b-0">
+              <td class="px-3 py-3 font-semibold text-text">{{ field.label }}</td>
+              <td class="px-3 py-3 text-text-muted">{{ field.key }}</td>
+              <td class="px-3 py-3 text-text">{{ field.type }}</td>
+              <td class="px-3 py-3 text-text-muted">
+                {{ field.options.length ? field.options.join(', ') : '—' }}
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td class="px-3 py-5 text-text-muted" colspan="4">אין עדיין שדות במאגר.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>

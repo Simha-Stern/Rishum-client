@@ -30,7 +30,8 @@ export class UiButton {
   readonly pressed = output<MouseEvent>();
 
   protected readonly classes = computed(() => {
-    const base = 'inline-flex min-h-11 items-center justify-center rounded-lg px-4 font-medium transition-colors disabled:cursor-not-allowed disabled:bg-disabled disabled:text-disabled-foreground';
+    const base =
+      'inline-flex min-h-11 items-center justify-center rounded-lg px-4 font-medium transition-colors disabled:cursor-not-allowed disabled:bg-disabled disabled:text-disabled-foreground';
     const size = {
       small: 'py-1.5 text-sm',
       medium: 'py-2',

@@ -1,24 +1,118 @@
-<main id="main-content" class="mx-auto max-w-4xl px-4 py-10" dir="rtl">
-  <p class="text-sm font-semibold text-primary-foreground">ניהול מוסד</p>
-  <app-heading class="mt-1 block" text="עורך תהליך ההרשמה" level="1" size="page" />
-  <section class="mt-6 rounded-2xl border border-border bg-surface p-6">
-    <app-form-field label="שם הטופס"><input appFormControl [ngModel]="name()" (ngModelChange)="name.set($event)" /></app-form-field>
-    <app-form-field class="mt-4 block" label="תאריך ושעת סגירת ההרשמה"><input appFormControl type="datetime-local" [ngModel]="closesAt()" (ngModelChange)="closesAt.set($event)" /></app-form-field>
-    <p class="mt-2 text-sm text-text-muted">ההרשמה תיסגר אוטומטית במועד שנקבע. אפשר לסגור אותה מידית אחרי הפרסום.</p>
-    <div class="mt-6 grid gap-3 rounded-xl bg-surface-muted p-4 sm:grid-cols-2">
-      <app-form-field label="מזהה שדה"><input appFormControl [ngModel]="newField().key" (ngModelChange)="newField.set({ ...newField(), key: $event })" placeholder="schoolYear" /></app-form-field>
-      <app-form-field label="שם שדה"><input appFormControl [ngModel]="newField().label" (ngModelChange)="newField.set({ ...newField(), label: $event })" /></app-form-field>
-      <app-form-field label="סוג"><select appFormControl [ngModel]="newField().type" (ngModelChange)="newField.set({ ...newField(), type: $event, optionsText: $event === 'select' ? newField().optionsText : '' })"><option value="text">טקסט</option><option value="email">דוא״ל</option><option value="tel">טלפון</option><option value="number">מספר</option><option value="date">תאריך</option><option value="textarea">טקסט ארוך</option><option value="select">רשימת בחירה</option><option value="checkbox">אישור</option></select></app-form-field>
-      @if (newField().type === 'select') { <app-form-field class="sm:col-span-2" label="אפשרויות בחירה"><input appFormControl [ngModel]="newField().optionsText" (ngModelChange)="newField.set({ ...newField(), optionsText: $event })" placeholder="אפשרות 1, אפשרות 2" /></app-form-field> }
-      <app-form-field label="שדה פרופיל (אופציונלי)"><select appFormControl [ngModel]="newField().profileKey" (ngModelChange)="newField.set({ ...newField(), profileKey: $event || null })"><option value="">ללא</option><option value="firstName">שם פרטי</option><option value="lastName">שם משפחה</option><option value="phone">טלפון</option><option value="idNumber">מספר זהות</option></select></app-form-field>
-      <label class="flex items-center gap-2 pt-6 text-sm font-medium"><input appCheckbox type="checkbox" [ngModel]="newField().required" (ngModelChange)="newField.set({ ...newField(), required: $event })" /> שדה חובה</label>
-      <app-button class="justify-self-start" text="הוספת שדה" variant="secondary" (pressed)="addField()" />
-    </div>
-    <ul class="mt-5 divide-y divide-border">
-      @for (field of fields(); track field.key) { <li class="flex items-center justify-between gap-4 py-3"><span><strong>{{ field.label }}</strong><span class="mr-2 text-sm text-text-muted">{{ field.key }} · {{ field.type }}</span></span><app-button text="הסרה" variant="text" size="small" (pressed)="removeField(field.key)" /></li> }
-      @empty { <li class="py-3 text-text-muted">עדיין לא נוספו שדות.</li> }
-    </ul>
-    <div class="mt-6 flex flex-wrap gap-3"><app-button text="שמירת טיוטה" variant="secondary" (pressed)="saveDraft()" /><app-button text="פתיחה או עדכון הרשמה" (pressed)="publish()" />@if (status() === 'published') { <app-button text="סגירה מידית" variant="destructive" (pressed)="close()" /> }</div>
-    @if (message(); as message) { <p class="mt-4 text-sm text-text" role="status">{{ message }}</p> }
+@if (isLoading()) {
+  <p
+    class="rounded-xl border border-border bg-surface-muted p-4 text-sm text-text-muted"
+    role="status"
+  >
+    טוען את עורך ההרשמה…
+  </p>
+} @else {
+  @if (status() === 'published') {
+    <p
+      class="mb-5 rounded-xl border border-border bg-surface-muted p-4 text-sm text-text"
+      role="status"
+    >
+      ההרשמה פתוחה כעת. פרסום גרסה חדשה יחול על נרשמים חדשים בלבד.
+    </p>
+  }
+
+  <section class="rounded-2xl border border-border bg-surface p-5 sm:p-6">
+    <app-form-field label="שם הטופס"
+      ><input appFormControl [ngModel]="name()" (ngModelChange)="name.set($event)" name="flowName"
+    /></app-form-field>
+    <app-form-field class="mt-4 block" label="תאריך ושעת סגירת ההרשמה"
+      ><input
+        appFormControl
+        type="datetime-local"
+        [ngModel]="closesAt()"
+        (ngModelChange)="closesAt.set($event)"
+        name="closesAt"
+    /></app-form-field>
+    <p class="mt-2 text-sm text-text-muted">
+      ההרשמה תיסגר אוטומטית במועד שנקבע. אפשר לסגור אותה מיד לאחר הפרסום.
+    </p>
   </section>
-</main>
+
+  <section
+    class="mt-6 rounded-2xl border border-border bg-surface p-5 sm:p-6"
+    aria-labelledby="catalog-fields-heading"
+  >
+    <app-heading text="בחירת שדות להרשמה" level="3" headingId="catalog-fields-heading" />
+    <p class="mt-1 text-sm text-text-muted">נבחרו {{ selectedFieldCount() }} שדות.</p>
+
+    @if (catalogFields().length) {
+      <div class="mt-5 overflow-x-auto">
+        <table class="min-w-full text-right text-sm">
+          <thead class="border-b border-border text-text-muted">
+            <tr>
+              <th class="px-3 py-3 font-medium" scope="col">להכללה</th>
+              <th class="px-3 py-3 font-medium" scope="col">שדה</th>
+              <th class="px-3 py-3 font-medium" scope="col">סוג</th>
+              <th class="px-3 py-3 font-medium" scope="col">אפשרויות</th>
+              <th class="px-3 py-3 font-medium" scope="col">שדה חובה</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (field of catalogFields(); track field.id) {
+              <tr
+                class="border-b border-border last:border-b-0"
+                [class.bg-surface-muted]="isSelected(field.id)"
+              >
+                <td class="px-3 py-3">
+                  <label class="flex min-h-11 items-center gap-2"
+                    ><input
+                      appCheckbox
+                      type="checkbox"
+                      [ngModel]="isSelected(field.id)"
+                      (ngModelChange)="setSelected(field.id, $event)"
+                      [name]="'selected-' + field.id"
+                    /><span class="sr-only">הכללת {{ field.label }}</span></label
+                  >
+                </td>
+                <td class="px-3 py-3">
+                  <p class="font-semibold text-text">{{ field.label }}</p>
+                  <p class="mt-1 text-xs text-text-muted">{{ field.key }}</p>
+                </td>
+                <td class="px-3 py-3 text-text">{{ fieldTypeLabel(field.type) }}</td>
+                <td class="px-3 py-3 text-text-muted">
+                  {{ field.options.length ? field.options.join(', ') : '—' }}
+                </td>
+                <td class="px-3 py-3">
+                  <label class="flex min-h-11 items-center gap-2"
+                    ><input
+                      appCheckbox
+                      type="checkbox"
+                      [ngModel]="isRequired(field.id)"
+                      (ngModelChange)="setRequired(field.id, $event)"
+                      [name]="'required-' + field.id"
+                      [disabled]="!isSelected(field.id)"
+                    /><span>חובה</span></label
+                  >
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <p class="mt-5 rounded-xl border border-border bg-surface-muted p-4 text-text-muted">
+        עדיין אין שדות במאגר. בקשו ממנהל המערכת להוסיף שדות לפני יצירת הטופס.
+      </p>
+    }
+
+    <div class="mt-6 flex flex-wrap gap-3">
+      <app-button text="שמירת טיוטה" variant="secondary" (pressed)="saveDraft()" />
+      <app-button
+        [text]="isPublishing() ? 'שומר ומפרסם…' : 'פרסום או עדכון הרשמה'"
+        [disabled]="isPublishing()"
+        [busy]="isPublishing()"
+        (pressed)="publish()"
+      />
+      @if (status() === 'published') {
+        <app-button text="סגירה מיידית" variant="destructive" (pressed)="close()" />
+      }
+    </div>
+    @if (message(); as currentMessage) {
+      <p class="mt-4 text-sm text-text" role="status">{{ currentMessage }}</p>
+    }
+  </section>
+}

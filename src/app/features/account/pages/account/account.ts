@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
@@ -6,11 +6,10 @@ import { UiButton } from '../../../../shared/components/ui/ui-button';
 import { UiFormControl } from '../../../../shared/components/ui/ui-form-control.directive';
 import { UiFormField } from '../../../../shared/components/ui/ui-form-field';
 import { UiHeading } from '../../../../shared/components/ui/ui-heading';
-import { UiLink } from '../../../../shared/components/ui/ui-link';
 
 @Component({
   selector: 'app-account',
-  imports: [ReactiveFormsModule, UiButton, UiFormControl, UiFormField, UiHeading, UiLink],
+  imports: [ReactiveFormsModule, UiButton, UiFormControl, UiFormField, UiHeading],
   templateUrl: './account.html',
 })
 export class Account {
@@ -19,7 +18,6 @@ export class Account {
   protected readonly auth = inject(AuthService);
   protected readonly isSaving = signal(false);
   protected readonly saved = signal(false);
-  protected readonly memberships = computed(() => this.auth.session()?.memberships ?? []);
   protected readonly form = this.formBuilder.nonNullable.group({
     firstName: [this.auth.user()?.firstName ?? '', Validators.required],
     lastName: [this.auth.user()?.lastName ?? '', Validators.required],

@@ -1,0 +1,62 @@
+<main id="main-content" class="mx-auto max-w-5xl py-5" dir="rtl">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+    <div>
+      <p class="text-sm font-semibold text-primary-foreground">ניהול מוסד</p>
+      <app-heading class="mt-1 block" text="הרשמות פתוחות" level="1" size="page" />
+      <p class="mt-2 text-text-muted">כאן מוצגות כל ההרשמות הזמינות כעת לציבור.</p>
+    </div>
+    <app-button text="הוסף רישום" (pressed)="openNew()" />
+  </div>
+
+  <section class="mt-7" aria-labelledby="open-registrations-list">
+    <app-heading text="רשימת ההרשמות" level="2" headingId="open-registrations-list" />
+    @if (isLoading()) {
+      <p class="mt-4 rounded-2xl border border-border bg-surface p-6 text-text-muted" role="status">
+        טוען הרשמות…
+      </p>
+    } @else if (errorMessage(); as message) {
+      <div class="mt-4 rounded-2xl border border-danger bg-accent p-6" role="alert">
+        <p class="text-accent-foreground">{{ message }}</p>
+        <app-button class="mt-4 block" text="נסו שוב" variant="secondary" (pressed)="loadFlows()" />
+      </div>
+    } @else if (flows().length) {
+      <ul class="mt-4 grid gap-3">
+        @for (flow of flows(); track flow.id) {
+          <li>
+            <button
+              type="button"
+              class="flex min-h-24 w-full flex-col items-start justify-center rounded-2xl border border-border bg-surface p-5 text-right transition hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:flex-row sm:items-center sm:justify-between"
+              (click)="openFlow(flow.id)"
+            >
+              <span
+                ><span class="block font-semibold text-text">{{ flow.name }}</span
+                ><span class="mt-1 block text-sm text-text-muted"
+                  >פתוחה עד {{ formatCloseDate(flow.closesAt) }}</span
+                ></span
+              >
+              <span class="mt-3 text-sm font-medium text-primary-foreground sm:mt-0">לעריכה</span>
+            </button>
+          </li>
+        }
+      </ul>
+    } @else {
+      <div class="mt-4 rounded-2xl border border-border bg-surface p-8 text-center">
+        <p class="font-medium text-text">אין כרגע הרשמות פתוחות.</p>
+        <p class="mt-1 text-sm text-text-muted">אפשר להוסיף רישום חדש ולפרסם אותו מכאן.</p>
+        <app-button class="mt-5 inline-block" text="הוסף רישום" (pressed)="openNew()" />
+      </div>
+    }
+  </section>
+</main>
+
+<app-dialog
+  [(open)]="isEditorOpen"
+  [title]="dialogTitle()"
+  description="בחרו את השדות שיופיעו בטופס וקבעו את תנאי הפרסום."
+>
+  <app-registration-editor
+    [institutionId]="institutionId"
+    [flowId]="selectedFlowId()"
+    (changed)="handleEditorChange($event)"
+  />
+</app-dialog>

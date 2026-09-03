@@ -1,7 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { catchError, map, of, switchMap, tap } from 'rxjs';
-import type { AuthenticationResult, CurrentSession, InstitutionRole, UserProfile } from '../models/auth';
+import type {
+  AuthenticationResult,
+  CurrentSession,
+  InstitutionRole,
+  UserProfile,
+} from '../models/auth';
 
 const tokenStorageKey = 'rishum_plus_session_token';
 
@@ -31,15 +36,22 @@ export class AuthService {
   }
 
   login(email: string, password: string) {
-    return this.http.post<AuthenticationResult>('/api/auth/login', { email, password }).pipe(
-      switchMap((result) => this.storeAuthentication(result)),
-    );
+    return this.http
+      .post<AuthenticationResult>('/api/auth/login', { email, password })
+      .pipe(switchMap((result) => this.storeAuthentication(result)));
   }
 
-  register(input: { email: string; password: string; firstName: string; lastName: string; phone?: string; idNumber?: string }) {
-    return this.http.post<AuthenticationResult>('/api/auth/register', input).pipe(
-      switchMap((result) => this.storeAuthentication(result)),
-    );
+  register(input: {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    phone?: string;
+    idNumber?: string;
+  }) {
+    return this.http
+      .post<AuthenticationResult>('/api/auth/register', input)
+      .pipe(switchMap((result) => this.storeAuthentication(result)));
   }
 
   logout() {
@@ -49,15 +61,26 @@ export class AuthService {
     );
   }
 
-  updateProfile(input: Partial<Pick<UserProfile, 'firstName' | 'lastName' | 'phone' | 'idNumber'>>) {
-    return this.http.patch<UserProfile>('/api/me/profile', input).pipe(
-      tap((user) => this.sessionState.update((session) => session ? { ...session, user } : session)),
-    );
+  updateProfile(
+    input: Partial<Pick<UserProfile, 'firstName' | 'lastName' | 'phone' | 'idNumber'>>,
+  ) {
+    return this.http
+      .patch<UserProfile>('/api/me/profile', input)
+      .pipe(
+        tap((user) =>
+          this.sessionState.update((session) => (session ? { ...session, user } : session)),
+        ),
+      );
   }
 
   hasInstitutionRole(institutionId: string, role: InstitutionRole): boolean {
     const session = this.sessionState();
-    return !!session && session.memberships.some((membership) => membership.institutionId === institutionId && membership.role === role);
+    return (
+      !!session &&
+      session.memberships.some(
+        (membership) => membership.institutionId === institutionId && membership.role === role,
+      )
+    );
   }
 
   getToken(): string | null {
@@ -66,10 +89,12 @@ export class AuthService {
 
   private storeAuthentication(result: AuthenticationResult) {
     localStorage.setItem(tokenStorageKey, result.token);
-    return this.http.get<CurrentSession>('/api/me').pipe(tap((session) => {
-      this.sessionState.set(session);
-      this.restoredState.set(true);
-    }));
+    return this.http.get<CurrentSession>('/api/me').pipe(
+      tap((session) => {
+        this.sessionState.set(session);
+        this.restoredState.set(true);
+      }),
+    );
   }
 
   private clearSession(): void {

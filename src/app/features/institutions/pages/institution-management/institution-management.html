@@ -1,53 +1,133 @@
 <main id="main-content" class="mx-auto max-w-5xl px-4 py-10" dir="rtl">
-  <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-    <div>
-      <p class="text-sm font-semibold text-primary-foreground">ניהול מוסד</p>
-      <app-heading class="mt-1 block" text="צוות, הרשמה ודשבורדים" level="1" size="page" />
-      <p class="mt-2 max-w-2xl text-text-muted">הזמינו מזכירים לניהול ההרשמה. משתמש קיים מקבל גישה מיד, ולמשתמש חדש הגישה תופעל בעת פתיחת חשבון.</p>
-    </div>
-    <app-link text="לדשבורד ההרשמות" [routerLink]="['/institutions', institutionId, 'analytics']" appearance="button" variant="secondary" />
+  <div>
+    <p class="text-sm font-semibold text-primary-foreground">ניהול מוסד</p>
+    <app-heading class="mt-1 block" text="צוות המוסד" level="1" size="page" />
+    <p class="mt-2 max-w-2xl text-text-muted">
+      הזמינו חברי צוות, עדכנו את התפקידים שלהם ונהלו את הגישה למוסד.
+    </p>
   </div>
 
-  <section class="mt-8 rounded-2xl border border-border bg-surface p-5 sm:p-6" aria-labelledby="invite-heading">
-    <app-heading text="הזמנת חברי צוות" level="2" headingId="invite-heading" />
-    <p class="mt-1 text-sm text-text-muted">הזינו כתובת אימייל אחת בכל שדה. אפשר להוסיף שדות לפי הצורך.</p>
-    <label class="mt-4 block text-sm font-medium text-text" for="invite-role">תפקיד למוזמנים</label>
-    <select appFormControl id="invite-role" class="mt-1" [ngModel]="inviteRole()" (ngModelChange)="inviteRole.set($event)" [disabled]="isSubmitting()"><option value="secretary">מזכיר/ה</option><option value="manager">מנהל/ת מוסד</option></select>
-    <div class="mt-4 space-y-3" aria-describedby="secretary-email-help">
-      @for (email of emailInputs(); track $index; let index = $index) {
-        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <label class="sr-only" [attr.for]="'secretary-email-' + index">כתובת אימייל של חבר/ת צוות</label>
-          <input appFormControl class="flex-1" [id]="'secretary-email-' + index" [ngModel]="email" (ngModelChange)="updateEmailInput(index, $event)" type="email" autocomplete="email" [disabled]="isSubmitting()" />
-          @if (emailInputs().length > 1) { <app-button text="הסרה" variant="text" size="small" [disabled]="isSubmitting()" (pressed)="removeEmailInput(index)" /> }
-        </div>
-      }
-    </div>
-    <app-button class="mt-3 block" text="+" ariaLabel="הוספת שדה אימייל" variant="secondary" size="small" [disabled]="isSubmitting()" (pressed)="addEmailInput()" />
-    <p id="secretary-email-help" class="mt-2 text-sm text-text-muted">מנהל/ת מוסד מקבלים גישה לדשבורד ולניהול הצוות; מזכיר/ה מנהלים את תהליך ההרשמה.</p>
-    <app-button class="mt-4 block" [text]="isSubmitting() ? 'שולח הזמנות…' : inviteRole() === 'manager' ? 'הזמנת מנהלי מוסד' : 'הזמנת מזכירים'" [disabled]="isSubmitting()" [busy]="isSubmitting()" (pressed)="invite()" />
-    @if (message(); as currentMessage) { <p class="mt-4 text-sm text-text" role="status">{{ currentMessage }}</p> }
-  </section>
+  <div class="mt-8">
+    <app-institution-team-invite
+      [institutionId]="institutionId"
+      (inviteCompleted)="onInviteCompleted($event)"
+    />
+  </div>
 
-  <section class="mt-6 rounded-2xl border border-border bg-surface p-5 sm:p-6" aria-labelledby="team-heading">
+  <section
+    class="mt-6 rounded-2xl border border-border bg-surface p-5 sm:p-6"
+    aria-labelledby="team-heading"
+  >
     <app-heading text="צוות המוסד" level="2" headingId="team-heading" />
+    @if (message(); as currentMessage) {
+      <p class="mt-4 text-sm text-text" role="status">{{ currentMessage }}</p>
+    }
     @if (isLoading()) {
       <p class="mt-4 text-text-muted" role="status">טוען את הצוות…</p>
     } @else {
       <ul class="mt-4 divide-y divide-border">
         @for (member of team(); track member.email) {
           <li class="flex flex-col gap-2 py-4 sm:flex-row sm:items-center sm:justify-between">
-            <div><p class="font-semibold text-text">{{ member.firstName && member.lastName ? member.firstName + ' ' + member.lastName : member.email }}</p><p class="text-sm text-text-muted">{{ member.email }}</p></div>
+            <div>
+              <p class="font-semibold text-text">
+                {{
+                  member.firstName && member.lastName
+                    ? member.firstName + ' ' + member.lastName
+                    : member.email
+                }}
+              </p>
+              <p class="text-sm text-text-muted">{{ member.email }}</p>
+            </div>
             @if (editingMember()?.email === member.email) {
-              <div class="flex flex-wrap items-center gap-2"><label class="sr-only" [attr.for]="'member-role-' + member.email">תפקיד</label><select appFormControl class="min-w-32" [id]="'member-role-' + member.email" [ngModel]="editedRole()" (ngModelChange)="editedRole.set($event)" [disabled]="isSubmitting()"><option value="manager">מנהל/ת</option>@if (canChangeToSecretary(member)) { <option value="secretary">מזכיר/ה</option> }</select><app-button text="שמירה" size="small" [disabled]="isSubmitting()" [busy]="isSubmitting()" (pressed)="saveMember()" /><app-button text="ביטול" variant="secondary" size="small" [disabled]="isSubmitting()" (pressed)="cancelEdit()" /></div>
+              <div class="flex flex-wrap items-center gap-2">
+                <label class="sr-only" [attr.for]="'member-role-' + member.email">תפקיד</label
+                ><select
+                  appFormControl
+                  class="min-w-32"
+                  [id]="'member-role-' + member.email"
+                  [ngModel]="editedRole()"
+                  (ngModelChange)="editedRole.set($event)"
+                  [disabled]="isSubmitting()"
+                >
+                  <option value="manager">מנהל/ת</option>
+                  @if (canChangeToSecretary(member)) {
+                    <option value="secretary">מזכיר/ה</option>
+                  }</select
+                ><app-button
+                  text="שמירה"
+                  size="small"
+                  [disabled]="isSubmitting()"
+                  [busy]="isSubmitting()"
+                  (pressed)="saveMember()"
+                /><app-button
+                  text="ביטול"
+                  variant="secondary"
+                  size="small"
+                  [disabled]="isSubmitting()"
+                  (pressed)="cancelEdit()"
+                />
+              </div>
             } @else {
-              <div class="flex flex-wrap items-center gap-2 text-sm"><span class="rounded-full bg-surface-muted px-3 py-1 font-medium text-text">{{ member.role === 'manager' ? 'מנהל/ת' : 'מזכיר/ה' }}</span><span class="rounded-full px-3 py-1 font-medium" [class.bg-accent]="member.status === 'pending'" [class.text-accent-foreground]="member.status === 'pending'" [class.bg-secondary]="member.status === 'active'" [class.text-secondary-foreground]="member.status === 'active'">{{ member.status === 'active' ? 'גישה פעילה' : 'ממתין/ה להרשמה' }}</span><app-button text="עריכה" variant="text" size="small" [disabled]="isSubmitting()" (pressed)="startEdit(member)" /><app-button text="הסרה" variant="destructive" size="small" [disabled]="isSubmitting() || !canRemove(member)" (pressed)="requestRemove(member)" /></div>
+              <div class="flex flex-wrap items-center gap-2 text-sm">
+                <span class="rounded-full bg-surface-muted px-3 py-1 font-medium text-text">{{
+                  member.role === 'manager' ? 'מנהל/ת' : 'מזכיר/ה'
+                }}</span
+                ><span
+                  class="rounded-full px-3 py-1 font-medium"
+                  [class.bg-accent]="member.status === 'pending'"
+                  [class.text-accent-foreground]="member.status === 'pending'"
+                  [class.bg-secondary]="member.status === 'active'"
+                  [class.text-secondary-foreground]="member.status === 'active'"
+                  >{{ member.status === 'active' ? 'גישה פעילה' : 'ממתין/ה להרשמה' }}</span
+                ><app-button
+                  text="עריכה"
+                  variant="text"
+                  size="small"
+                  [disabled]="isSubmitting()"
+                  (pressed)="startEdit(member)"
+                /><app-button
+                  text="הסרה"
+                  variant="destructive"
+                  size="small"
+                  [disabled]="isSubmitting() || !canRemove(member)"
+                  (pressed)="requestRemove(member)"
+                />
+              </div>
             }
           </li>
-        } @empty { <li class="py-4 text-text-muted">עדיין לא נוספו אנשי צוות.</li> }
+        } @empty {
+          <li class="py-4 text-text-muted">עדיין לא נוספו אנשי צוות.</li>
+        }
       </ul>
     }
     @if (memberToRemove(); as member) {
-      <section class="mt-5 rounded-xl border border-danger bg-accent p-4" aria-labelledby="remove-member-heading" role="alert"><app-heading [text]="'להסיר את ' + member.email + '?'" level="3" headingId="remove-member-heading" size="subsection" /><p class="mt-1 text-sm text-accent-foreground">הגישה של חבר/ת הצוות למוסד תבוטל.</p><div class="mt-4 flex flex-wrap gap-3"><app-button text="כן, להסיר" variant="destructive" [disabled]="isSubmitting()" [busy]="isSubmitting()" (pressed)="confirmRemove()" /><app-button text="ביטול" variant="secondary" [disabled]="isSubmitting()" (pressed)="cancelRemove()" /></div></section>
+      <section
+        class="mt-5 rounded-xl border border-danger bg-accent p-4"
+        aria-labelledby="remove-member-heading"
+        role="alert"
+      >
+        <app-heading
+          [text]="'להסיר את ' + member.email + '?'"
+          level="3"
+          headingId="remove-member-heading"
+          size="subsection"
+        />
+        <p class="mt-1 text-sm text-accent-foreground">הגישה של חבר/ת הצוות למוסד תבוטל.</p>
+        <div class="mt-4 flex flex-wrap gap-3">
+          <app-button
+            text="כן, להסיר"
+            variant="destructive"
+            [disabled]="isSubmitting()"
+            [busy]="isSubmitting()"
+            (pressed)="confirmRemove()"
+          /><app-button
+            text="ביטול"
+            variant="secondary"
+            [disabled]="isSubmitting()"
+            (pressed)="cancelRemove()"
+          />
+        </div>
+      </section>
     }
   </section>
 </main>

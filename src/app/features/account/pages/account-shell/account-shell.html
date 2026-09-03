@@ -1,0 +1,27 @@
+<div class="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8" dir="rtl">
+  <div class="mb-4 flex items-center justify-between lg:hidden">
+    <p class="text-sm font-semibold text-primary-foreground">אזור אישי</p>
+    <button
+      type="button"
+      class="inline-flex min-h-11 items-center gap-2 rounded-lg border border-border bg-surface px-3 text-sm font-medium text-text hover:bg-surface-muted"
+      aria-label="פתיחת תפריט האזור האישי"
+      aria-controls="personal-area-navigation"
+      [attr.aria-expanded]="isSidebarOpen()"
+      (click)="isSidebarOpen.set(true)"
+    >
+      <span aria-hidden="true" class="flex w-5 flex-col gap-1">
+        <span class="h-0.5 w-5 rounded-full bg-text"></span>
+        <span class="h-0.5 w-5 rounded-full bg-text"></span>
+        <span class="h-0.5 w-5 rounded-full bg-text"></span>
+      </span>
+      תפריט
+    </button>
+  </div>
+
+  <div class="lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:items-start lg:gap-8">
+    <app-personal-area-sidebar [open]="isSidebarOpen()" (closed)="isSidebarOpen.set(false)" />
+    <div class="min-w-0">
+      <router-outlet />
+    </div>
+  </div>
+</div>

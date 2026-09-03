@@ -6,10 +6,11 @@ import { UiButton } from '../../../../shared/components/ui/ui-button';
 import { UiFormControl } from '../../../../shared/components/ui/ui-form-control.directive';
 import { UiFormField } from '../../../../shared/components/ui/ui-form-field';
 import { UiHeading } from '../../../../shared/components/ui/ui-heading';
+import { UiLink } from '../../../../shared/components/ui/ui-link';
 
 @Component({
   selector: 'app-admin-institutions',
-  imports: [ReactiveFormsModule, UiButton, UiFormControl, UiFormField, UiHeading],
+  imports: [ReactiveFormsModule, UiButton, UiFormControl, UiFormField, UiHeading, UiLink],
   templateUrl: './admin-institutions.html',
 })
 export class AdminInstitutions {
@@ -37,7 +38,9 @@ export class AdminInstitutions {
   });
 
   constructor() {
-    this.service.getAllForAdmin().subscribe({ next: (institutions) => this.institutions.set(institutions) });
+    this.service
+      .getAllForAdmin()
+      .subscribe({ next: (institutions) => this.institutions.set(institutions) });
   }
 
   protected create(): void {
@@ -48,10 +51,18 @@ export class AdminInstitutions {
     this.service.create(this.form.getRawValue()).subscribe({
       next: (institution) => {
         this.institutions.update((items) => [...items, institution]);
-        this.form.reset({ name: '', logoUrl: '', address: '', city: '', managerEmail: '', secretaryEmail: '' });
+        this.form.reset({
+          name: '',
+          logoUrl: '',
+          address: '',
+          city: '',
+          managerEmail: '',
+          secretaryEmail: '',
+        });
         this.message.set('המוסד נוצר והמנהל קיבל גישה, או שממתינה לו הזמנה לפתיחת חשבון.');
       },
-      error: (error: { error?: { message?: string } }) => this.message.set(error.error?.message ?? 'לא ניתן היה ליצור את המוסד.'),
+      error: (error: { error?: { message?: string } }) =>
+        this.message.set(error.error?.message ?? 'לא ניתן היה ליצור את המוסד.'),
     });
   }
 
@@ -70,7 +81,14 @@ export class AdminInstitutions {
 
   protected cancelEdit(): void {
     this.editingInstitutionId.set(null);
-    this.editForm.reset({ name: '', logoUrl: '', address: '', city: '', managerEmail: '', secretaryEmail: '' });
+    this.editForm.reset({
+      name: '',
+      logoUrl: '',
+      address: '',
+      city: '',
+      managerEmail: '',
+      secretaryEmail: '',
+    });
   }
 
   protected saveEdit(institutionId: string): void {
@@ -80,11 +98,16 @@ export class AdminInstitutions {
     }
     this.service.update(institutionId, this.editForm.getRawValue()).subscribe({
       next: (updatedInstitution) => {
-        this.institutions.update((institutions) => institutions.map((institution) => institution.id === institutionId ? updatedInstitution : institution));
+        this.institutions.update((institutions) =>
+          institutions.map((institution) =>
+            institution.id === institutionId ? updatedInstitution : institution,
+          ),
+        );
         this.cancelEdit();
         this.message.set('פרטי המוסד עודכנו.');
       },
-      error: (error: { error?: { message?: string } }) => this.message.set(error.error?.message ?? 'לא ניתן היה לעדכן את המוסד.'),
+      error: (error: { error?: { message?: string } }) =>
+        this.message.set(error.error?.message ?? 'לא ניתן היה לעדכן את המוסד.'),
     });
   }
 
@@ -101,11 +124,14 @@ export class AdminInstitutions {
     if (!institution) return;
     this.service.delete(institution.id).subscribe({
       next: () => {
-        this.institutions.update((institutions) => institutions.filter((item) => item.id !== institution.id));
+        this.institutions.update((institutions) =>
+          institutions.filter((item) => item.id !== institution.id),
+        );
         this.deletingInstitution.set(null);
         this.message.set('המוסד נמחק.');
       },
-      error: (error: { error?: { message?: string } }) => this.message.set(error.error?.message ?? 'לא ניתן היה למחוק את המוסד.'),
+      error: (error: { error?: { message?: string } }) =>
+        this.message.set(error.error?.message ?? 'לא ניתן היה למחוק את המוסד.'),
     });
   }
 }

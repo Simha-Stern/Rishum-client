@@ -29,7 +29,10 @@ export class InstitutionManagementService {
     return this.http.post<Institution>('/api/admin/institutions', input);
   }
 
-  update(institutionId: string, input: Omit<Institution, 'id'> & { managerEmail: string; secretaryEmail: string }) {
+  update(
+    institutionId: string,
+    input: Omit<Institution, 'id'> & { managerEmail: string; secretaryEmail: string },
+  ) {
     return this.http.put<Institution>(`/api/admin/institutions/${institutionId}`, input);
   }
 
@@ -50,11 +53,16 @@ export class InstitutionManagementService {
   }
 
   updateTeamMember(institutionId: string, email: string, role: InstitutionTeamMember['role']) {
-    return this.http.put<void>(`/api/institutions/${institutionId}/members/${encodeURIComponent(email)}`, { role });
+    return this.http.put<void>(
+      `/api/institutions/${institutionId}/members/${encodeURIComponent(email)}`,
+      { role },
+    );
   }
 
   removeTeamMember(institutionId: string, email: string) {
-    return this.http.delete<void>(`/api/institutions/${institutionId}/members/${encodeURIComponent(email)}`);
+    return this.http.delete<void>(
+      `/api/institutions/${institutionId}/members/${encodeURIComponent(email)}`,
+    );
   }
 
   getAnalytics(institutionId: string) {

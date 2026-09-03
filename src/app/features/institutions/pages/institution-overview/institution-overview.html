@@ -1,0 +1,24 @@
+<main id="main-content" class="py-5" dir="rtl">
+  <p class="text-sm font-semibold text-primary-foreground">ניהול מוסד</p>
+  <app-heading class="mt-1 block" text="ניהול המוסד" level="1" size="page" />
+  <p class="mt-2 max-w-2xl text-text-muted">
+    בחרו פעולה לניהול המוסד. כל האפשרויות זמינות גם בתפריט הצד.
+  </p>
+
+  <section class="mt-8 grid gap-4 sm:grid-cols-2" aria-label="פעולות ניהול">
+    <a
+      class="rounded-2xl border border-border bg-surface p-5 transition-colors hover:bg-surface-muted"
+      [routerLink]="['/account/institutions', institutionId, 'analytics']"
+    >
+      <app-heading text="דשבורד" level="2" size="card" />
+      <p class="mt-2 text-sm text-text-muted">צפייה בנתוני ההרשמות של המוסד.</p>
+    </a>
+    <a
+      class="rounded-2xl border border-border bg-surface p-5 transition-colors hover:bg-surface-muted"
+      [routerLink]="['/account/institutions', institutionId, 'team']"
+    >
+      <app-heading text="צוות המוסד" level="2" size="card" />
+      <p class="mt-2 text-sm text-text-muted">הזמנת חברי צוות ועדכון ההרשאות שלהם.</p>
+    </a>
+  </section>
+</main>
