@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
@@ -13,10 +13,19 @@ import {
   UiFormControl,
 } from '../../../../shared/components/ui/ui-form-control.directive';
 import { UiHeading } from '../../../../shared/components/ui/ui-heading';
+import { UiLink } from '../../../../shared/components/ui/ui-link';
 
 @Component({
   selector: 'app-registration',
-  imports: [DatePipe, ReactiveFormsModule, UiButton, UiCheckbox, UiFormControl, UiHeading],
+  imports: [
+    DatePipe,
+    ReactiveFormsModule,
+    UiButton,
+    UiCheckbox,
+    UiFormControl,
+    UiHeading,
+    UiLink,
+  ],
   templateUrl: './registration.html',
 })
 export class Registration {
@@ -24,12 +33,23 @@ export class Registration {
   private readonly service = inject(RegistrationFlowService);
   private readonly auth = inject(AuthService);
   private readonly institutionId = this.route.snapshot.paramMap.get('institutionId')!;
+  protected readonly user = this.auth.user;
+  protected readonly registrationUrl = `/institutions/${this.institutionId}/register`;
   protected readonly form = new FormGroup<Record<string, FormControl<string | boolean>>>({});
   protected readonly registrationForm = signal<PublicRegistrationForm | null>(null);
   protected readonly message = signal<string | null>(null);
+  protected readonly isLoading = signal(true);
   protected readonly isSubmitting = signal(false);
 
   constructor() {
+    effect(() => {
+      if (this.auth.isRestored()) this.loadRegistrationForm();
+    });
+  }
+
+  protected loadRegistrationForm(): void {
+    this.isLoading.set(true);
+    this.message.set(null);
     this.service.getPublicForm(this.institutionId).subscribe({
       next: (registrationForm) => {
         const profile = this.auth.user();
@@ -51,8 +71,12 @@ export class Registration {
           );
         }
         this.registrationForm.set(registrationForm);
+        this.isLoading.set(false);
       },
-      error: () => this.message.set('ההרשמה למוסד זה אינה פתוחה כעת.'),
+      error: () => {
+        this.message.set('לא ניתן להציג את ההרשמה כרגע. נסו שוב בעוד רגע.');
+        this.isLoading.set(false);
+      },
     });
   }
 
